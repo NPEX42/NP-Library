@@ -1,0 +1,2 @@
+module np_core {
+}
