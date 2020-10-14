@@ -1,0 +1,2 @@
+# The NP Core Library
+----
