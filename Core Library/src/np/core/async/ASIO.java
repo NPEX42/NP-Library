@@ -21,23 +21,41 @@ public class ASIO {
 		callback.Invoke(IO.ReadString(path));
 	}
 	
+	public static Thread SaveStrings(String path, String... data) {
+		Thread t = CreateThread(() -> { SaveStringsThread(path, data); });
+		t.start();
+		return t;
+	} 
+	
+	public static Thread LoadBytes(String path, Callback<Byte[]> cb) {
+		Thread t = CreateThread(() -> { LoadBytesThread(path, cb); });
+		t.start();
+		return t;
+	}
+	
+	private static void LoadBytesThread(String path, Callback<Byte[]> cb) {
+		long tp1, tp2;
+		System.out.println(Thread.currentThread().getName()+" Started Work...");
+		tp1 = System.currentTimeMillis();
+		Byte[] data = IO.LoadBytes(path);
+		tp2 = System.currentTimeMillis();
+		
+		System.out.println(Thread.currentThread().getName()+" Loaded File '"+path+"' in "+(tp2 - tp1)+"ms, Read "+data.length+" Bytes...");
+		
+		if(cb != null)
+			cb.Invoke(data);
+	}
+
+	private static void SaveStringsThread(String path, String... data) {
+		IO.SaveStrings(path, data);
+	}
+	
 	private static void SendStringOverSocketThread(Socket sock, String msg) {
-		try {
-			PrintWriter printer = new PrintWriter(sock.getOutputStream());
-			printer.print(msg);
-		} catch (IOException e) {
-			System.err.println("======"+Thread.currentThread().getName()+"======");
-			e.printStackTrace();
-		}
+		IO.WriteStringToSocket(sock, msg);
 	}
 	
 	private static void ReadStringFromSocketThread(Socket sock, Callback<String> callback) {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-			callback.Invoke(reader.readLine());
-		} catch (IOException e) {
-			callback.Invoke("");
-		}
+		callback.Invoke(IO.ReadStringFromSocket(sock));
 	}
 	
 	public static Thread SendStringOverSocket(Socket sock, String msg) {

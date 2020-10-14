@@ -87,4 +87,18 @@ public class IO {
 			return false;
 		}
 	}
+
+	public static Byte[] LoadBytes(String path) {
+		File file = new File(path);
+		int length = (int) file.length();
+		Byte[] data = new Byte[length];
+		try (DataInputStream stream = new DataInputStream(new FileInputStream(file))) {
+			for(int i = 0; i < length; i++) {
+				data[i] = stream.readByte();
+			}
+			return data;
+		} catch(IOException ioex) {
+			return new Byte[0];
+		}
+	}
 }

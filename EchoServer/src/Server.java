@@ -15,6 +15,7 @@ public class Server {
 		
 		while(client.isConnected()) {
 			String msg = IO.ReadStringFromSocket(client);
+			if(msg == null) break;
 			if(msg.equalsIgnoreCase(".exit")) {
 				client.close();
 				break;

@@ -10,6 +10,7 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="11"/>
     <property name="source" value="11"/>
+    <import file="compile.xml"/>
     <path id="Core Library.classpath">
         <pathelement location="bin"/>
     </path>
