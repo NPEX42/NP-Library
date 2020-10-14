@@ -8,7 +8,8 @@
 
 	<target name="JAR">
 		<mkdir dir="${build}"/>
-		<mkdir dir="${dist}/lib"/>
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${bin}"/>
 		<javac srcdir="${src}" destdir="${build}"/>
 		<jar destfile="${dist}/NP_Core.jar" basedir="${bin}/"/>
 	</target>
