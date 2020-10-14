@@ -78,7 +78,7 @@ public class IO {
 	public static boolean WriteStringToSocket(Socket sock, String msg) {
 		try {
 			PrintWriter printer = new PrintWriter(sock.getOutputStream());
-			printer.println(msg);
+			printer.print(msg);
 			printer.flush();
 			return true;
 		} catch (IOException e) {
