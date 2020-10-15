@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.Socket;
 import np.core.IO;
 
@@ -27,17 +28,17 @@ public class ASIO {
 		return t;
 	} 
 	
-	public static Thread LoadBytes(String path, Callback<Byte[]> cb) {
+	public static Thread LoadBytes(String path, Callback<byte[]> cb) {
 		Thread t = CreateThread(() -> { LoadBytesThread(path, cb); });
 		t.start();
 		return t;
 	}
 	
-	private static void LoadBytesThread(String path, Callback<Byte[]> cb) {
+	private static void LoadBytesThread(String path, Callback<byte[]> cb) {
 		long tp1, tp2;
 		System.out.println(Thread.currentThread().getName()+" Started Work...");
 		tp1 = System.currentTimeMillis();
-		Byte[] data = IO.LoadBytes(path);
+		byte[] data = IO.LoadBytes(path);
 		tp2 = System.currentTimeMillis();
 		
 		System.out.println(Thread.currentThread().getName()+" Loaded File '"+path+"' in "+(tp2 - tp1)+"ms, Read "+data.length+" Bytes...");
@@ -45,6 +46,22 @@ public class ASIO {
 		if(cb != null)
 			cb.Invoke(data);
 	}
+	
+	public static Thread SaveBytes(String path, byte[] data, Callback<FileSavedCallbackData> cb) {
+		Thread t = CreateThread(() -> { SaveBytesThread(path, data, cb); });
+		t.start();
+		return t;
+	}
+	
+	private static void SaveBytesThread(String path, byte[] data, Callback<FileSavedCallbackData> cb) {
+		boolean state = IO.SaveBytes(path, data);
+		FileSavedCallbackData callbackData = new FileSavedCallbackData();
+		callbackData.path = path;
+		callbackData.bytesWritten = (state) ? data.length : -1;
+		if(cb != null) cb.Invoke(callbackData);
+	} 
+	
+	
 
 	private static void SaveStringsThread(String path, String... data) {
 		IO.SaveStrings(path, data);
@@ -79,6 +96,16 @@ public class ASIO {
 		});
 		t.start();
 		return t;
+	}
+	
+	private static void SaveObjectThread(String path, Serializable obj, Callback<FileSavedCallbackData> cb) {
+		
+	}
+	
+	public static class FileSavedCallbackData implements Serializable {
+		private static final long serialVersionUID = -7070798316603283578L; //GENERATED ON Thur 15 Oct, 2020
+		public String path = "";
+		public int bytesWritten = -1;
 	}
 
 }

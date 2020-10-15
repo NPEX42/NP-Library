@@ -3,6 +3,8 @@ package np.core;
 import java.io.*;
 import java.net.Socket;
 
+import np.core.async.ASIO.FileSavedCallbackData;
+
 public class IO {
 	public static BufferedReader OpenReader(String file) throws IOException {
 		return new BufferedReader(new FileReader(file));
@@ -88,17 +90,49 @@ public class IO {
 		}
 	}
 
-	public static Byte[] LoadBytes(String path) {
+	public static byte[] LoadBytes(String path) {
 		File file = new File(path);
 		int length = (int) file.length();
-		Byte[] data = new Byte[length];
+		byte[] data = new byte[length];
 		try (DataInputStream stream = new DataInputStream(new FileInputStream(file))) {
 			for(int i = 0; i < length; i++) {
 				data[i] = stream.readByte();
 			}
 			return data;
 		} catch(IOException ioex) {
-			return new Byte[0];
+			return new byte[0];
+		}
+	}
+	
+	public static boolean SaveBytes(String path, byte... data) {
+		try (DataOutputStream stream = new DataOutputStream(new FileOutputStream(path))) {
+			for(byte b : data) {
+				stream.writeByte(b);
+			}
+			return true;
+		} catch (IOException ioex) {
+			return false;
+		} 
+	}
+	
+	public static boolean SaveObject(String path, Serializable obj) {
+		try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(path))) {
+			stream.writeObject(obj);
+			return true;
+		} catch (IOException ioex) {
+			return false;
+		}
+	}
+
+	public static Object LoadObjectOrNull(String path) {
+		try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(path))) {
+			return stream.readObject();
+		} catch (ObjectStreamException obsex) {
+			return null;
+		} catch (IOException ioex) {
+			return null;
+		} catch (ClassNotFoundException cnfex) {
+			return null;
 		}
 	}
 }
